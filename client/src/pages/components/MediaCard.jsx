@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Play, Download, Heart, Clock } from 'lucide-react';
+import { Download, Heart } from 'lucide-react';
 
-const MediaCard = ({ item }) => {
+const MediaCard = ({ item}) => {
   const cardRef = useRef(null);
   const overlayRef = useRef(null);
   const playRef = useRef(null);
@@ -87,7 +87,6 @@ const MediaCard = ({ item }) => {
     );
   };
 
-  const isVideoOrGif = item.type === 'video' || item.type === 'gif';
 
   return (
     <div
@@ -100,8 +99,8 @@ const MediaCard = ({ item }) => {
       <div className="relative rounded-xl overflow-hidden bg-[#13131f] shadow-lg">
         {/* Image */}
         <img
-          src={item.src}
-          alt={item.alt}
+          src={item.urls?.raw || item.src}
+          alt={item?.alt}
           className={`w-full object-cover ${item.height} block`}
           loading="lazy"
           draggable={false}
@@ -117,40 +116,10 @@ const MediaCard = ({ item }) => {
           }}
         />
 
-        {/* GIF Badge */}
-        {item.badge && (
-          <div className="absolute top-3 right-3 gif-badge text-white text-xs font-bold px-2 py-0.5 rounded-md">
-            {item.badge}
-          </div>
-        )}
-
-        {/* Video duration */}
-        {item.duration && !item.badge && (
-          <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-black/70 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded-md border border-white/10">
-            <Clock size={10} />
-            {item.duration}
-          </div>
-        )}
-
         {/* Duration for GIFs that also have time */}
         {item.duration && item.badge && (
           <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded-md border border-white/10">
             {item.duration}
-          </div>
-        )}
-
-        {/* Play button for videos/gifs */}
-        {isVideoOrGif && (
-          <div
-            ref={playRef}
-            className="absolute inset-0 flex items-center justify-center opacity-0"
-          >
-            <button
-              className="play-btn w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white hover:bg-white/30 transition-colors duration-200"
-              aria-label="Play"
-            >
-              <Play size={18} fill="white" className="ml-0.5" />
-            </button>
           </div>
         )}
 

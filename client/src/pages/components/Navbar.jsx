@@ -88,7 +88,7 @@ const Navbar = () => {
 
         {/* User avatar */}
         <button className="relative flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-violet-700 flex items-center justify-center text-white font-bold text-sm ring-2 ring-purple-500/30 group-hover:ring-purple-400/60 transition-all duration-200">
+          <div className="w-9 h-9 rounded-full bg-linear-to-br from-purple-500 to-violet-700 flex items-center justify-center text-white font-bold text-sm ring-2 ring-purple-500/30 group-hover:ring-purple-400/60 transition-all duration-200">
             U
           </div>
           <ChevronDown size={14} className="text-gray-400 group-hover:text-white transition-colors duration-200" />
