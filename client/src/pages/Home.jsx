@@ -1,6 +1,8 @@
 import gsap from 'gsap';
 import { useEffect, useRef  } from 'react';
 import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import MediaGrid from './components/MediaGrid';
 
 const Home = () => {
     const appRef = useRef(null);
@@ -21,6 +23,8 @@ const Home = () => {
     return (
         <div ref={appRef} className='min-h-screen bg-linear-to-b from-[#0a0a0f] to-[#080810]'>
             <Navbar />
+            <Hero />
+            <MediaGrid />
         </div>
     )
 }

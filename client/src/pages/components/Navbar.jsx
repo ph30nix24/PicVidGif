@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
-import { Folders, ChevronDown, Bell, User } from 'lucide-react';
+import { Folders, ChevronDown } from 'lucide-react';
 
 const Navbar = () => {
   const navRef = useRef(null);
@@ -52,9 +52,9 @@ const Navbar = () => {
   return (
     <nav
       ref={navRef}
-      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-30 py-4 transition-all duration-300 ${
         scrolled
-          ? 'bg-black/80 backdrop-blur-xl border-b border-purple-500/10'
+          ? 'bg-black/30 backdrop-blur-xl'
           : 'bg-transparent'
       }`}
     >
