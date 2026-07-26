@@ -1,3 +1,9 @@
 import mongoose from 'mongoose'
 
-const 
+const connectDb = async () => {
+    try {
+
+    } catch (e) {
+        next(e)
+    }
+}

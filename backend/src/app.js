@@ -17,4 +17,11 @@ app.use('/picVidGif/auth/v1', authRouter)
 
 
 
+
+
+
+
+
+import errorHandler from './middlewares/errorHandler.middleware.js'
+app.use(errorHandler)
 export default app;
