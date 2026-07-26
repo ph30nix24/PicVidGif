@@ -10,7 +10,10 @@ gsap.registerPlugin(ScrollTrigger);
 const MediaGrid = () => {
   const gridRef = useRef(null);
   const MEDIA_ITEMS = useSelector((state) => state.search.results)
+
   useEffect(() => {
+    if(MEDIA_ITEMS.length === 0) return
+
     const ctx = gsap.context(() => {
       const items = gridRef.current.querySelectorAll('.masonry-item');
 
