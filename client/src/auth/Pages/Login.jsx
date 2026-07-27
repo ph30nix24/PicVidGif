@@ -64,7 +64,8 @@ const Login = () => {
     if (googleLoading || appleLoading) return;
     setAppleLoading(true);
     gsap.to(cardRef.current, { scale: 0.97, duration: 0.12, yoyo: true, repeat: 1 });
-    setTimeout(() => { setAppleLoading(false); }, 1500);
+    setTimeout(() => { setAppleLoading(false); 
+    }, 1500);
   };
 
   return (
@@ -139,10 +140,8 @@ const Login = () => {
         {/* Logo */}
         <div ref={logoRef} className="mb-6 mt-1">
           <span className="text-2xl font-black tracking-tight select-none">
-            <span className="logo-bracket">[</span>
             <span className="text-white">PicVid</span>
             <span className="gradient-text">Gif</span>
-            <span className="logo-bracket">]</span>
           </span>
         </div>
 

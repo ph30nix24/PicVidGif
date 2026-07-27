@@ -52,11 +52,10 @@ const Navbar = () => {
   return (
     <nav
       ref={navRef}
-      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-30 py-4 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-30 py-4 transition-all duration-300 ${scrolled
           ? 'bg-black/30 backdrop-blur-xl'
           : 'bg-transparent'
-      }`}
+        }`}
     >
       {/* Logo */}
       <div
@@ -75,13 +74,15 @@ const Navbar = () => {
 
       {/* Right side nav */}
       <div ref={rightRef} className="flex items-center gap-4">
-        <button className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white/5 group">
-          <Folders
-            size={18}
-            className="text-gray-400 group-hover:text-purple-400 transition-colors duration-200"
-          />
-          <span className="font-medium">Collections</span>
-        </button>
+        <a href="/collection">
+          <button className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white/5 group">
+            <Folders
+              size={18}
+              className="text-gray-400 group-hover:text-purple-400 transition-colors duration-200"
+            />
+            <span className="font-medium">Collections</span>
+          </button>
+        </a>
 
         {/* Divider */}
         <div className="w-px h-6 bg-white/10" />
