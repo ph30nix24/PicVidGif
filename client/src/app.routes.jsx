@@ -1,8 +1,8 @@
 import { createBrowserRouter } from 'react-router'
-import Home from './pages/Home'
-import Protect from './auth/Pages/Protect'
-import Collection from './collections/page/Collection'
-import Login from './auth/Pages/Login'
+import Home from './features/home/Home'
+import Protect from './features/auth/Pages/Protect'
+import Collection from './features/collections/page/Collection'
+import Login from './features/auth/Pages/Login'
 
 
 export const routes = createBrowserRouter([

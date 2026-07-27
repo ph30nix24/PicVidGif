@@ -2,8 +2,8 @@ import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { Search, Image, Video, Smile } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveTab, setQuary, setResults } from '../../redux/features/searchSlice';
-import { getImages, getRandomImages } from '../../apis/mediaApis';
+import { setActiveTab, setQuary, setResults } from '../../../redux/features/searchSlice';
+import { getImages, getRandomImages } from '../../../apis/mediaApis';
 
 const FILTERS = [
   { id: 'images', label: 'Images', icon: Image },

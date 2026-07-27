@@ -1,8 +1,10 @@
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
-import { BG_TILES } from "../utils";
+import { BG_TILES } from '../utils/index';
 import BgTile from "../Components/BgTile";
-import { AppleIcon, GoogleIcon, Spinner } from "../../icons/Icons";
+import { AppleIcon, GoogleIcon, Spinner } from "../../../icons/Icons";
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../../../utils/firebase'
 
 const Login = () => {
   const cardRef   = useRef(null);
@@ -54,11 +56,19 @@ const Login = () => {
   const onPress   = el => gsap.to(el, { scale: 0.97, duration: 0.1,  ease: 'power2.in'   });
   const onRelease = el => gsap.to(el, { scale: 1.025, duration: 0.2,  ease: 'back.out(2)' });
 
-  const handleGoogle = () => {
+  const handleGoogle = async () => {
     if (googleLoading || appleLoading) return;
     setGoogleLoading(true);
     gsap.to(cardRef.current, { scale: 0.97, duration: 0.12, yoyo: true, repeat: 1 });
-    setTimeout(() => { setGoogleLoading(false); }, 1500);
+    try {
+      const data = await signInWithPopup(auth, googleProvider)
+      console.log(data)
+    } catch (e) {
+      console.log(e)
+    }
+    finally {
+      setGoogleLoading(false);
+    }
   };
   const handleApple = () => {
     if (googleLoading || appleLoading) return;
