@@ -1,4 +1,4 @@
-import { Schema } from "mongoose"
+import mongoose, { Schema } from "mongoose"
 
 const userSchema = new Schema({
     name: {
@@ -14,19 +14,6 @@ const userSchema = new Schema({
         lowercase: true,
         index: true
     },
-    password: {
-        type: String,
-        required: function () {
-            return this.authProvider === "local"
-        },
-        select: false,
-    },
-    authProvider: {
-        type: String,
-        enum: ["local", "firebase"],
-        required: true,
-        default: "local",
-    },
     firebaseUID: {
         type: String,
         unique: true,
@@ -34,7 +21,7 @@ const userSchema = new Schema({
     },
     isVerified: {
         type: Boolean,
-        default: false, // local users verify via email link; firebase users can default true
+        default: false, 
     },
     avatar: {
         type: String,
@@ -42,3 +29,7 @@ const userSchema = new Schema({
     },
 },{ timestamps: true })
 
+
+const User = mongoose.model('user', userSchema);
+
+export default User;
