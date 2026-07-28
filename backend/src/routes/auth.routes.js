@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { login } from "../controllers/auth.controller.js";
+import { getUser, login } from "../controllers/auth.controller.js";
+import { protect } from "../middlewares/auth.middleware.js";
 
 const authRouter = Router()
 
@@ -10,6 +11,14 @@ const authRouter = Router()
  * @access  public
  */
 authRouter.post('/', login);
+
+/**
+ * @name    getUserRoute
+ * @desc    get currentUser 
+ * @route   GET /picVidGif/auth/v1/
+ * @access  public
+ */
+authRouter.get('/', protect, getUser)
 
 
 

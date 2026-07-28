@@ -5,7 +5,7 @@ import ApiResponse from '../utils/ApiResponse.js';
 import Blacklisted from '../models/blacklist.model.js';
 
 
-const protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
     try {
         const session = req.cookies?.session;
         if(!session) {
@@ -17,7 +17,7 @@ const protect = async (req, res, next) => {
         }
 
         const decode = jwt.verify(session, process.env.JWT_SECRET);
-        const user = await User.findById(decoded.id);
+        const user = await User.findById(decode.id);
 
         if(!user) {
             throw new ApiError(400, "Session expired or user no longer exists")

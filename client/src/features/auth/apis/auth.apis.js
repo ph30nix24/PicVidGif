@@ -14,3 +14,16 @@ export const loginApi = async ({ token }) => {
         throw error;
     }
 }
+
+export const getUser = async () => {
+    try {
+        const response = await axios.get(`${AUTH_UPI}/`, {
+            withCredentials: true
+        })
+        return response.data
+    } catch (error) {
+        console.error("login failed:", error.response?.data || error.message);
+        throw error;
+    }
+}
+

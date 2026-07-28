@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
-import { Folders, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Folders, ChevronDown, Sun, Moon, LogIn } from 'lucide-react';
 import { useTheme } from '../../../context/ThemeContext';
 import { useSelector } from 'react-redux'
 
@@ -12,6 +12,7 @@ const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
 
   const isLogged = useSelector((state) => state.auth.user)
+  console.log(isLogged)
 
   useEffect(() => {
     // Navbar entrance animation
@@ -93,8 +94,8 @@ const Navbar = () => {
         {/* User avatar */}
         {isLogged ? (
           <button className="relative flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-full bg-linear-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-bold text-sm ring-2 dark:ring-gray-600/30 ring-indigo-200 dark:group-hover:ring-gray-400/50 group-hover:ring-indigo-400 transition-all duration-200">
-              U
+            <div className="w-9 h-9 rounded-full bg-linear-to-br from-indigo-500 to-indigo-700 dark:from-gray-500 dark:to-gray-700 flex items-center justify-center text-white font-bold text-sm ring-2 dark:ring-gray-600/30 ring-indigo-200 dark:group-hover:ring-gray-400/50 group-hover:ring-indigo-400 transition-all duration-200 uppercase">
+              {isLogged.name[0]}
             </div>
             <ChevronDown
               size={14}
@@ -104,9 +105,10 @@ const Navbar = () => {
         ) : (
           <a href="/auth/login">
             <button className='relative flex items-center gap-2 group'>
-              <div className='w-fit px-8 py-2 rounded-full bg-linear-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-bold text-sm ring-2 dark:ring-gray-600/30 ring-indigo-200 dark:group-hover:ring-gray-400/50 group-hover:ring-indigo-400 transition-all duration-200 cursor-pointer'>
+              <div className='w-fit px-8 py-2 rounded-full bg-linear-to-br from-indigo-500 to-indigo-700 dark:from-gray-500 dark:to-gray-700 flex items-center justify-center text-white font-bold text-sm ring-2 dark:ring-gray-600/30 ring-indigo-200 dark:group-hover:ring-gray-400/50 group-hover:ring-indigo-400 transition-all duration-200 cursor-pointer'>
                 Login
               </div>
+              <LogIn />
             </button>
           </a>
         )}

@@ -240,7 +240,7 @@ const Login = () => {
             onMouseDown={e => onPress(e.currentTarget)}
             onMouseUp={e => onRelease(e.currentTarget)}
             disabled={googleLoading || appleLoading}
-            className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-semibold disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-semibold disabled:cursor-not-allowed cursor-pointer"
             style={{
               background: isDark
                 ? (googleHover ? '#ffffff' : 'rgba(255,255,255,0.93)')
@@ -268,7 +268,7 @@ const Login = () => {
             onMouseDown={e => onPress(e.currentTarget)}
             onMouseUp={e => onRelease(e.currentTarget)}
             disabled={googleLoading || appleLoading}
-            className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-semibold disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-semibold disabled:cursor-not-allowed cursor-pointer"
             style={{
               background: appleHover ? '#1c1c1c' : '#0f0f0f',
               color: '#fff',

@@ -137,7 +137,7 @@ const Hero = () => {
         className={`w-full max-w-2xl relative flex items-center rounded-full border transition-all duration-300 ${
           searchFocused
             ? 'search-border dark:bg-[#111111] bg-white dark:border-gray-500 border-indigo-400 shadow-lg dark:shadow-black/20 shadow-indigo-100'
-            : 'dark:border-gray-700 border-slate-200 dark:bg-[#111111]/80 bg-white shadow-sm shadow-slate-100'
+            : 'dark:border-gray-700 border-slate-200 dark:bg-[#111111]/80 bg-white shadow-sm shadow-slate-100 dark:shadow-gray-900'
         }`}
         style={{ minHeight: 56, zIndex: 20 }}
       >
