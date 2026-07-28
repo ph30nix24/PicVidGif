@@ -1,32 +1,29 @@
 import gsap from 'gsap';
-import { useEffect, useRef  } from 'react';
+import { useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import MediaGrid from './components/MediaGrid';
 
 const Home = () => {
-    const appRef = useRef(null);
+  const appRef = useRef(null);
 
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            gsap.from('body', {
-                opacity: 0,
-                duration: 0.5,
-                ease: 'power2.out',
-            });
-        }, appRef);
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from('body', { opacity: 0, duration: 0.5, ease: 'power2.out' });
+    }, appRef);
+    return () => ctx.revert();
+  }, []);
 
-        return () => ctx.revert();
-    }, []);
+  return (
+    <div
+      ref={appRef}
+      className="min-h-screen bg-[#f0f1f7] dark:bg-[#080808] transition-colors duration-300"
+    >
+      <Navbar />
+      <Hero />
+      <MediaGrid />
+    </div>
+  );
+};
 
-
-    return (
-        <div ref={appRef} className='min-h-screen bg-linear-to-b from-[#0a0a0f] to-[#080810]'>
-            <Navbar />
-            <Hero />
-            <MediaGrid />
-        </div>
-    )
-}
-
-export default Home
+export default Home;

@@ -2,15 +2,8 @@
 
 @import "tailwindcss";
 
-:root {
-  --purple-glow: #8b5cf6;
-  --purple-bright: #a855f7;
-  --purple-dim: #6d28d9;
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #0f0f1a;
-  --bg-card: #13131f;
-  --border-subtle: rgba(139, 92, 246, 0.2);
-}
+/* ─── Class-based dark mode for Tailwind v4 ─── */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   * {
@@ -26,8 +19,6 @@
 
   body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--bg-primary);
-    color: #fff;
     overflow-x: hidden;
   }
 }
@@ -35,78 +26,66 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
-} 
-
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0a0a0f;
-}
-::-webkit-scrollbar-thumb {
-  background: #8b5cf6;
-  border-radius: 3px;
 }
 
-/* Search bar glow */
-.search-glow {
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.6), 0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(139, 92, 246, 0.1);
+/* ─── Custom scrollbar ─── */
+::-webkit-scrollbar { width: 6px; }
+
+::-webkit-scrollbar-track { background: #efefef; }
+::-webkit-scrollbar-thumb { background: #cccccc; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #aaaaaa; }
+
+.dark ::-webkit-scrollbar-track { background: #080808; }
+.dark ::-webkit-scrollbar-thumb { background: #3f3f3f; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #606060; }
+
+/* ─── Gradient text (needs -webkit-background-clip, can't be Tailwind inline) ─── */
+.gradient-text {
+  background: linear-gradient(135deg, #4f46e5, #6366f1, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.dark .gradient-text {
+  background: linear-gradient(135deg, #e5e7eb, #9ca3af, #6b7280);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Card hover glow */
-.card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.card-hover:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.2);
-}
-
-/* Play button pulse */
+/* ─── Keyframe animations (can't be Tailwind inline) ─── */
 @keyframes pulse-play {
   0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
-  50% { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
+  50%       { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
 }
+.play-btn { animation: pulse-play 2s ease-in-out infinite; }
 
-.play-btn {
-  animation: pulse-play 2s ease-in-out infinite;
-}
-
-/* Logo bracket animation */
 @keyframes bracket-glow {
-  0%, 100% { color: #8b5cf6; text-shadow: 0 0 10px #8b5cf6; }
-  50% { color: #a855f7; text-shadow: 0 0 20px #a855f7, 0 0 40px #a855f7; }
+  0%, 100% { color: #9ca3af; text-shadow: 0 0 10px rgba(156,163,175,0.5); }
+  50%       { color: #d1d5db; text-shadow: 0 0 20px rgba(209,213,219,0.4), 0 0 40px rgba(156,163,175,0.2); }
 }
-.logo-bracket {
-  animation: bracket-glow 2s ease-in-out infinite;
-}
+.logo-bracket { animation: bracket-glow 2s ease-in-out infinite; }
 
-/* Masonry grid */
-.masonry-grid {
-  columns: 4;
-  column-gap: 12px;
+@keyframes border-pulse {
+  0%, 100% { border-color: rgba(120,120,120,0.7); }
+  50%       { border-color: rgba(180,180,180,0.9); }
 }
+.dark .search-border { animation: border-pulse 2.5s ease-in-out infinite; }
 
-@media (max-width: 1200px) {
-  .masonry-grid { columns: 3; }
+@keyframes border-pulse-indigo {
+  0%, 100% { border-color: rgba(99,102,241,0.6); }
+  50%       { border-color: rgba(129,140,248,1); }
 }
+.search-border { animation: border-pulse-indigo 2.5s ease-in-out infinite; }
 
-@media (max-width: 768px) {
-  .masonry-grid { columns: 2; }
-}
+/* ─── Masonry grid (columns layout can't be done with Tailwind inline) ─── */
+.masonry-grid { columns: 4; column-gap: 12px; }
+@media (max-width: 1200px) { .masonry-grid { columns: 3; } }
+@media (max-width: 768px)  { .masonry-grid { columns: 2; } }
+@media (max-width: 480px)  { .masonry-grid { columns: 1; } }
+.masonry-item { break-inside: avoid; margin-bottom: 12px; }
 
-@media (max-width: 480px) {
-  .masonry-grid { columns: 1; }
-}
-
-.masonry-item {
-  break-inside: avoid;
-  margin-bottom: 12px;
-}
-
-/* Filter tab */
+/* ─── Filter tab shimmer (::after pseudo-element can't be Tailwind inline) ─── */
 .filter-tab {
   transition: all 0.2s ease;
   position: relative;
@@ -120,39 +99,4 @@ html {
   opacity: 0;
   transition: opacity 0.2s ease;
 }
-.filter-tab:hover::after {
-  opacity: 1;
-}
-
-/* Shimmer effect on card hover overlay */
-.card-overlay {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.masonry-item:hover .card-overlay {
-  opacity: 1;
-}
-
-/* Badge GIF */
-.gif-badge {
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255,255,255,0.15);
-}
-
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, #c084fc, #a855f7, #7c3aed);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Animated border for search */
-@keyframes border-pulse {
-  0%, 100% { border-color: rgba(139, 92, 246, 0.8); }
-  50% { border-color: rgba(168, 85, 247, 1); }
-}
-.search-border {
-  animation: border-pulse 2.5s ease-in-out infinite;
-}
+.filter-tab:hover::after { opacity: 1; }
