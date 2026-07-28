@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { Folders, ChevronDown, Sun, Moon, LogIn } from 'lucide-react';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '../context/ThemeContext';
 import { useSelector } from 'react-redux'
 
 const Navbar = () => {
@@ -67,7 +67,7 @@ const Navbar = () => {
 
         {/* Collections link */}
         <a href="/collection">
-          <button className="flex items-center gap-2 text-sm dark:text-gray-300 text-slate-600 dark:hover:text-white hover:text-indigo-700 transition-colors duration-200 px-3 py-2 rounded-lg dark:hover:bg-white/5 hover:bg-indigo-50 group">
+          <button className="flex items-center gap-2 text-sm dark:text-gray-300 text-slate-600 dark:hover:text-white hover:text-indigo-700 transition-colors duration-200 px-3 py-2 rounded-lg dark:hover:bg-white/5 hover:bg-indigo-50 group cursor-pointer">
             <Folders
               size={18}
               className="dark:text-gray-400 text-slate-400 dark:group-hover:text-gray-200 group-hover:text-indigo-500 transition-colors duration-200"

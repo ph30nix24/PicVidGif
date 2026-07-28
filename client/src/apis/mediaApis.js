@@ -1,28 +1,29 @@
 import axios from "axios"
 
+const MEDIA_API = `${import.meta.env.VITE_BACKEND_UPI}/picVidGif/v1/media`
+
 export const getImages = async (query) => {
     try {
-        console.log("1")
-        const response = await axios.get('https://api.unsplash.com/search/photos', {
+        const response = await axios.get(`${MEDIA_API}/images/search`, {
             params: { query, page: 1, per_page: 20 },
-            headers: { Authorization: `Client-ID ${import.meta.env.VITE_UNSPLASH_ACCESS_KEY}` }
+            withCredentials: true
         })
-        return response.data
+        return response.data.data
     } catch (error) {
-        console.log("Error while fetching images", error.message)
+        console.log("Error while fetching images", error.response?.data || error.message)
         throw error
     }
 }
 
 export const getRandomImages = async () => {
     try {
-        const response = await axios.get('https://api.unsplash.com/photos/random', {
+        const response = await axios.get(`${MEDIA_API}/images/random`, {
             params: { count: 20 },
-            headers: { Authorization: `Client-ID ${import.meta.env.VITE_UNSPLASH_ACCESS_KEY}` }
+            withCredentials: true
         })
-        return response.data
+        return response.data.data
     } catch (error) {
-        console.log("Error while fetching images", error.message)
+        console.log("Error while fetching images", error.response?.data || error.message)
         throw error
     }
 }

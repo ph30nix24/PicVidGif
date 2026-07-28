@@ -4,9 +4,9 @@ import { Navigate, useLocation } from 'react-router'
 
 const Protect = () => {
     const user = useSelector((state) => state.auth.user)
-    
+    console.log(user)
     const location = useLocation()
-    if(!user) {
+    if(!user ) {
         return (
             <Navigate to="/auth/login" replace state={{ from: location.pathname }}/>
         )

@@ -23,8 +23,8 @@ app.get('/', (req, res) => {
 import authRouter from './routes/auth.routes.js';
 app.use('/picVidGif/v1/auth', authRouter)
 
-
-
+import mediaRouter from './routes/media.routes.js'
+app.use('/picVidGif/v1/media', mediaRouter)
 
 
 

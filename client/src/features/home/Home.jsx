@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import { useEffect, useRef } from 'react';
-import Navbar from './components/Navbar';
+import Navbar from '../../components/Navbar';
 import Hero from './components/Hero';
 import MediaGrid from './components/MediaGrid';
 
