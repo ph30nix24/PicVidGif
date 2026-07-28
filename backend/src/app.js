@@ -4,6 +4,11 @@ import morgan from 'morgan'
 
 const app = express()
 
+app.use(cors({
+    origin: process.env.FRONTEND_API,
+    credentials: true
+}))
+
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -13,7 +18,7 @@ app.get('/', (req, res) => {
 })
 
 import authRouter from './routes/auth.routes.js';
-app.use('/picVidGif/auth/v1', authRouter)
+app.use('/picVidGif/v1/auth', authRouter)
 
 
 

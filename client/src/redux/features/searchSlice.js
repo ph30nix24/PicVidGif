@@ -20,19 +20,19 @@ export const searchSlice = createSlice({
             state.results = action.payload
             state.loading = false
         },
-        setLoading: (state) => {
-            state.loading = true,
+        setLoading: (state, action) => {
+            state.loading = action.payload
             state.error = null
         },
         setError: (state, action) => {
             state.error = action.payload,
-            state.loading = false
+                state.loading = false
         },
         clearResult: (state) => {
             state.results = []
         }
     }
-}) 
+})
 
 export const { setQuary, setActiveTab, setResults, setLoading, setError } = searchSlice.actions
 

@@ -7,30 +7,43 @@ import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../../../utils/firebase';
 import { useTheme } from '../../../context/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
+import { useDispatch } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router'
+
+import { loginApi } from "../apis/auth.apis";
+import { setUser } from "../../../redux/features/authSlice";
+
 
 const Login = () => {
-  const cardRef   = useRef(null);
-  const logoRef   = useRef(null);
-  const titleRef  = useRef(null);
-  const subRef    = useRef(null);
-  const divRef    = useRef(null);
-  const btnsRef   = useRef(null);
+  const cardRef = useRef(null);
+  const logoRef = useRef(null);
+  const titleRef = useRef(null);
+  const subRef = useRef(null);
+  const divRef = useRef(null);
+  const btnsRef = useRef(null);
   const footerRef = useRef(null);
 
-  const [googleHover,   setGoogleHover]   = useState(false);
-  const [appleHover,    setAppleHover]    = useState(false);
+  const [googleHover, setGoogleHover] = useState(false);
+  const [appleHover, setAppleHover] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [appleLoading,  setAppleLoading]  = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
 
   const { isDark, toggleTheme } = useTheme();
+  const dispatch = useDispatch()
+
+  const navigate = useNavigate()
+  const location = useLocation();
+
+  const from = location.state?.from || '/';
+
 
   /* entrance timeline */
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
     tl.fromTo(cardRef.current,
-        { y: 52, opacity: 0, scale: 0.93 },
-        { y: 0,  opacity: 1, scale: 1, duration: 0.85, ease: 'back.out(1.5)' }, 0.5)
+      { y: 52, opacity: 0, scale: 0.93 },
+      { y: 0, opacity: 1, scale: 1, duration: 0.85, ease: 'back.out(1.5)' }, 0.5)
 
       .fromTo(logoRef.current,
         { y: -16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.48 }, '-=0.52')
@@ -48,17 +61,17 @@ const Login = () => {
 
       .fromTo(btnsRef.current.children,
         { y: 22, opacity: 0 },
-        { y: 0,  opacity: 1, duration: 0.42, stagger: 0.13 }, '-=0.14')
+        { y: 0, opacity: 1, duration: 0.42, stagger: 0.13 }, '-=0.14')
 
       .fromTo(footerRef.current,
         { opacity: 0 }, { opacity: 1, duration: 0.38 }, '-=0.05');
   }, []);
 
   /* button micro-interactions */
-  const onEnter   = el => gsap.to(el, { scale: 1.025, y: -2, duration: 0.2, ease: 'power2.out' });
-  const onLeave   = el => gsap.to(el, { scale: 1,     y:  0, duration: 0.2, ease: 'power2.out' });
-  const onPress   = el => gsap.to(el, { scale: 0.97,          duration: 0.1, ease: 'power2.in'  });
-  const onRelease = el => gsap.to(el, { scale: 1.025,          duration: 0.2, ease: 'back.out(2)' });
+  const onEnter = el => gsap.to(el, { scale: 1.025, y: -2, duration: 0.2, ease: 'power2.out' });
+  const onLeave = el => gsap.to(el, { scale: 1, y: 0, duration: 0.2, ease: 'power2.out' });
+  const onPress = el => gsap.to(el, { scale: 0.97, duration: 0.1, ease: 'power2.in' });
+  const onRelease = el => gsap.to(el, { scale: 1.025, duration: 0.2, ease: 'back.out(2)' });
 
   const handleGoogle = async () => {
     if (googleLoading || appleLoading) return;
@@ -66,7 +79,10 @@ const Login = () => {
     gsap.to(cardRef.current, { scale: 0.97, duration: 0.12, yoyo: true, repeat: 1 });
     try {
       const data = await signInWithPopup(auth, googleProvider);
-      console.log(data);
+      const idToken = await data.user.getIdToken();
+      const res = await loginApi({ token: idToken })
+      dispatch(setUser(res.data))
+      navigate(from, { replace: true });
     } catch (e) {
       console.log(e);
     } finally {
@@ -81,6 +97,9 @@ const Login = () => {
     setTimeout(() => setAppleLoading(false), 1500);
   };
 
+
+  
+
   return (
     <div
       className="min-h-screen w-full flex items-center justify-center px-4 relative overflow-hidden transition-colors duration-300"
@@ -93,7 +112,7 @@ const Login = () => {
         className="absolute top-5 right-5 z-20 w-9 h-9 flex items-center justify-center rounded-full dark:bg-white/5 bg-white/70 dark:hover:bg-white/10 hover:bg-white border dark:border-white/10 border-slate-300/60 backdrop-blur-sm transition-all duration-200 cursor-pointer shadow-sm"
       >
         {isDark
-          ? <Sun  size={16} className="text-gray-300" />
+          ? <Sun size={16} className="text-gray-300" />
           : <Moon size={16} className="text-slate-600" />
         }
       </button>
@@ -216,10 +235,10 @@ const Login = () => {
           <button
             id="btn-google"
             onClick={handleGoogle}
-            onMouseEnter={e => { setGoogleHover(true);  onEnter(e.currentTarget); }}
+            onMouseEnter={e => { setGoogleHover(true); onEnter(e.currentTarget); }}
             onMouseLeave={e => { setGoogleHover(false); onLeave(e.currentTarget); }}
-            onMouseDown ={e => onPress(e.currentTarget)}
-            onMouseUp   ={e => onRelease(e.currentTarget)}
+            onMouseDown={e => onPress(e.currentTarget)}
+            onMouseUp={e => onRelease(e.currentTarget)}
             disabled={googleLoading || appleLoading}
             className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-semibold disabled:cursor-not-allowed"
             style={{
@@ -244,10 +263,10 @@ const Login = () => {
           <button
             id="btn-apple"
             onClick={handleApple}
-            onMouseEnter={e => { setAppleHover(true);  onEnter(e.currentTarget); }}
+            onMouseEnter={e => { setAppleHover(true); onEnter(e.currentTarget); }}
             onMouseLeave={e => { setAppleHover(false); onLeave(e.currentTarget); }}
-            onMouseDown ={e => onPress(e.currentTarget)}
-            onMouseUp   ={e => onRelease(e.currentTarget)}
+            onMouseDown={e => onPress(e.currentTarget)}
+            onMouseUp={e => onRelease(e.currentTarget)}
             disabled={googleLoading || appleLoading}
             className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-semibold disabled:cursor-not-allowed"
             style={{

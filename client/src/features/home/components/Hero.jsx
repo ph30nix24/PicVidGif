@@ -4,6 +4,7 @@ import { Search, Image, Video, Smile } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveTab, setLoading, setQuary, setResults } from '../../../redux/features/searchSlice';
 import { getImages, getRandomImages } from '../../../apis/mediaApis';
+import Loader from '../../../components/Loader'
 
 const FILTERS = [
   { id: 'images', label: 'Images', icon: Image },
@@ -71,7 +72,7 @@ const Hero = () => {
   if (loading) {
     return (
       <div className="w-full h-screen flex items-center justify-center dark:bg-[#080808] bg-gray-50 dark:text-gray-400 text-gray-500 text-sm font-medium">
-        Loading…
+        <Loader />
       </div>
     );
   }
@@ -79,11 +80,15 @@ const Hero = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(setQuary(text));
+    dispatch(setLoading(true))
     try {
       const data = await getImages(text);
       dispatch(setResults(data.results));
     } catch (error) {
       console.log(error.message);
+    }
+    finally{
+      dispatch(setLoading(false))
     }
   };
 

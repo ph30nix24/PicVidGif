@@ -4,6 +4,7 @@ import { Navigate, useLocation } from 'react-router'
 
 const Protect = () => {
     const user = useSelector((state) => state.auth.user)
+    
     const location = useLocation()
     if(!user) {
         return (

@@ -18,6 +18,6 @@ export const routes = createBrowserRouter([
     },
     {
         path: '/auth/login',
-        element: <Login />
+        element: <  Login />
     }
 ])
