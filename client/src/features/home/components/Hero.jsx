@@ -29,6 +29,7 @@ const Hero = () => {
       try {
         const data = await getRandomImages();
         dispatch(setResults(data));
+        console.log(data)
       } catch (error) {
         console.log(error.message);
       }

@@ -26,6 +26,9 @@ app.use('/picVidGif/v1/auth', authRouter)
 import mediaRouter from './routes/media.routes.js'
 app.use('/picVidGif/v1/media', mediaRouter)
 
+import collectionRouter from './routes/collection.routes.js'
+app.use('/picVidGif/v1/collection', collectionRouter)
+
 
 
 

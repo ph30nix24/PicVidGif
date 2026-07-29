@@ -100,3 +100,8 @@ html {
   transition: opacity 0.2s ease;
 }
 .filter-tab:hover::after { opacity: 1; }
+
+/* ─── Collection page stat pill hover ─── */
+.stat-pill:hover {
+  box-shadow: 0 0 0 1px rgba(99,102,241,0.15), 0 4px 16px rgba(99,102,241,0.06);
+}
