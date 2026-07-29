@@ -65,7 +65,7 @@ const Navbar = () => {
       <div ref={rightRef} className="flex items-center gap-3">
 
         {/* Collections link */}
-        <a href={`/${isLogged?._id}/collection`}>
+        <a href={isLogged ? `/${isLogged?._id}/collection` : '/auth/login'}>
           <button className="flex items-center gap-2 text-sm dark:text-gray-300 text-slate-600 dark:hover:text-white hover:text-indigo-700 transition-colors duration-200 px-3 py-2 rounded-lg dark:hover:bg-white/5 hover:bg-indigo-50 group cursor-pointer">
             <Folders
               size={18}
