@@ -28,13 +28,15 @@ export const login = async (req, res, next) => {
             expiresIn: "7d"
         })
 
+        const isProduction = process.env.NODE_ENV === "production";
+        console.log(isProduction, " NODE_ENV: ", process.env.NODE_ENV)
+
         res.cookie("session", sessionID, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000
-        })
-
+        });
         return res.status(200).json(new ApiResponse(200, user, "successfully logged in user"))
 
     } catch (e) {

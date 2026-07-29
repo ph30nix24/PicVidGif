@@ -8,6 +8,7 @@ import Blacklisted from '../models/blacklist.model.js';
 export const protect = async (req, res, next) => {
     try {
         const session = req.cookies?.session;
+        console.log("sessionID: ", session)
         if(!session) {
             throw new ApiError(401,  "Session ID is required.")
         }
