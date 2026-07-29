@@ -8,7 +8,7 @@ import Loader from './components/Loader';
 import { getUser } from './features/auth/apis/auth.apis';
 import { useDispatch } from 'react-redux';
 import { setUser } from './redux/features/authSlice';
-
+import ToastContainer from './components/Toast/ToastContainer'
 gsap.registerPlugin(ScrollTrigger);
 
 const App = () => {
@@ -30,6 +30,7 @@ const App = () => {
     <ThemeProvider>
       {loading && <Loader onComplete={() => setLoading(false)} />}
       <main className='w-full min-h-screen'>
+        <ToastContainer />
         <RouterProvider router={routes} />
       </main>
     </ThemeProvider>
