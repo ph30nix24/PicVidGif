@@ -1,19 +1,28 @@
 
 import { useSelector } from 'react-redux'
 import { Navigate, useLocation } from 'react-router'
+import Loader from '../../../components/Loader'
 
-const Protect = () => {
-    const user = useSelector((state) => state.auth.user)
-    console.log(user)
-    const location = useLocation()
-    if(!user ) {
-        return (
-            <Navigate to="/auth/login" replace state={{ from: location.pathname }}/>
-        )
-    }
-  return (
-    <div>Protect</div>
-  )
+const Protect = ({ children }) => {
+  const user = useSelector((state) => state.auth.user)
+  const loading = useSelector((state) => state.auth.loading)
+  console.log(user)
+  const location = useLocation()
+
+  if (loading) {
+    return (
+      <Loader />
+    )
+  }
+
+  if (!user) {
+    return (
+      <Navigate to="/auth/login" replace state={{ from: location.pathname }} />
+    )
+  }
+  
+  return children
+
 }
 
 export default Protect
