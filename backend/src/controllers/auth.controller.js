@@ -10,9 +10,8 @@ export const login = async (req, res, next) => {
         const { token } = req.body;
         const decoded = await getAuth(firebaseApp).verifyIdToken(token)
 
-        const { name, uuid, email, picture } = decoded
-
-        let user = await User.findOne({ firebaseUID: uuid });
+        const { name, uid, email, picture } = decoded
+        let user = await User.findOne({ firebaseUID: uid });
 
         if (!user) {
             user = await User.create({
@@ -20,7 +19,7 @@ export const login = async (req, res, next) => {
                 email,
                 isVerified: true,
                 avatar: picture,
-                firebaseUID: uuid
+                firebaseUID: uid
             })
         }
 
