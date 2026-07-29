@@ -11,7 +11,7 @@ export const routes = createBrowserRouter([
         element: <Home />
     },
     {
-        path: '/collection',
+        path: '/:userId/collection',
         element: <Protect>
             <Collection />
         </Protect>
