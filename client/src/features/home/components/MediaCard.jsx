@@ -1,6 +1,9 @@
 import { useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { Download, Heart } from 'lucide-react';
+import { useDispatch } from 'react-redux'
+import { addToast } from '../../../redux/features/toastSlice';
+import { addInCollection } from '../../collections/apis/collection.apis';
 
 const MediaCard = ({ item }) => {
   const cardRef    = useRef(null);
@@ -8,6 +11,7 @@ const MediaCard = ({ item }) => {
   const playRef    = useRef(null);
   const actionsRef = useRef(null);
   const [liked, setLiked] = useState(false);
+  const dispatch = useDispatch()
 
   const handleMouseEnter = () => {
     gsap.to(cardRef.current, { y: -5, scale: 1.02, duration: 0.35, ease: 'power2.out' });
@@ -37,13 +41,19 @@ const MediaCard = ({ item }) => {
     }
   };
 
-  const handleLike = (e) => {
+  const handleLike = async (e) => {
     e.stopPropagation();
     setLiked(!liked);
     gsap.fromTo(e.currentTarget,
       { scale: 1.4 },
       { scale: 1, duration: 0.4, ease: 'elastic.out(1.5, 0.4)' }
     );
+    try {
+      const result = await addInCollection({ sourceId: item.id, type: "image", url: item.urls.regular, thumbnailUrl: item.urls.thumb, description: item.alt_description || item.description || ""})
+      dispatch(addToast(`Successful ${result.message}`, "success"))
+    } catch (error) {
+      dispatch(addToast(`Failed ${error.response?.data.message}`, "error"))
+    }
   };
 
   return (
@@ -58,7 +68,7 @@ const MediaCard = ({ item }) => {
 
         {/* Image */}
         <img
-          src={item.urls?.raw || item.src}
+          src={item.urls?.regular || item.src}
           alt={item?.alt}
           className={`w-full object-cover ${item.height} block`}
           loading="lazy"

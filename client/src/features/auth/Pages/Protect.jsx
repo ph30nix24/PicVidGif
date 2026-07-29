@@ -6,7 +6,6 @@ import Loader from '../../../components/Loader'
 const Protect = ({ children }) => {
   const user = useSelector((state) => state.auth.user)
   const loading = useSelector((state) => state.auth.loading)
-  console.log(user)
   const location = useLocation()
 
   if (loading) {

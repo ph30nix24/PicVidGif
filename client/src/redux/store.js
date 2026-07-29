@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import searchReducer from '../redux/features/searchSlice'
-import authReducer from '../redux/features/authSlice'
+import searchReducer from './features/searchSlice'
+import authReducer from './features/authSlice'
+import toastReducer from './features/toastSlice'
 export const store = configureStore({
     reducer: {
         search: searchReducer,
-        auth: authReducer
+        auth: authReducer,
+        toast: toastReducer
     }
 })
 

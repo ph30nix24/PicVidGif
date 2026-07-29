@@ -19,7 +19,6 @@ const App = () => {
       try {
         const res = await getUser();
         dispatch(setUser(res.data))
-        console.log(res.data)
       } catch(e) {
         console.log(e)
       }

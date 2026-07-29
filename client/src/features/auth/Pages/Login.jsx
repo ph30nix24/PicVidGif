@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from 'react-router'
 
 import { loginApi } from "../apis/auth.apis";
 import { setUser } from "../../../redux/features/authSlice";
+import { addToast } from "../../../redux/features/toastSlice";
 
 
 const Login = () => {
@@ -82,9 +83,11 @@ const Login = () => {
       const idToken = await data.user.getIdToken();
       const res = await loginApi({ token: idToken })
       dispatch(setUser(res.data))
+      dispatch(addToast(`congrats ${res.message}`, "success"))
       navigate(from, { replace: true });
     } catch (e) {
       console.log(e);
+      dispatch(addToast(`Failed ${e.response?.data.message}`, "error"))
     } finally {
       setGoogleLoading(false);
     }
