@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { CalendarDays, TrendingUp } from 'lucide-react'
+import { CalendarDays } from 'lucide-react'
 import { useRef, useEffect } from 'react'
 import { gsap } from 'gsap'
 

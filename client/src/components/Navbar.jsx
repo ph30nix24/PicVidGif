@@ -106,7 +106,7 @@ const Navbar = () => {
             <button className='relative flex items-center gap-2 group'>
               <div className='w-fit px-8 py-2 rounded-full bg-linear-to-br from-indigo-500 to-indigo-700 dark:from-gray-500 dark:to-gray-700 flex items-center justify-center text-white font-bold text-sm ring-2 dark:ring-gray-600/30 ring-indigo-200 dark:group-hover:ring-gray-400/50 group-hover:ring-indigo-400 transition-all duration-200 cursor-pointer'>
                 <span>Login</span>
-                <LogIn />
+                <LogIn size={12}/>
               </div>
             </button>
           </a>
