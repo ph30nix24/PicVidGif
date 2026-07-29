@@ -60,8 +60,9 @@ const Collection = () => {
   useEffect(() => {
     const fetchCollection = async () => {
       try {
-        const data = await getSavedImages()
-        setItems(data?.items || data?.saved || [])
+        const result = await getSavedImages()
+        console.log(result.data)
+        setItems(result.data?.items || result.data?.saved || [])
       } catch {
         // API not available – fall back to mock data for demo
         setItems(MOCK_ITEMS)

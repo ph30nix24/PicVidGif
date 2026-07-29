@@ -7,6 +7,7 @@ export const getSavedImages = async () => {
         const response = await axios.get(`${COLLECTION_API}/`, {
             withCredentials: true
         })
+        
         return response.data
     } catch (error) {
         console.error("Error fetching saved images:", error.response?.data || error.message)
