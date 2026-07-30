@@ -89,7 +89,7 @@ const Collection = () => {
       <Navbar />
 
       {/* Page wrapper */}
-      <div className="max-w-[1400px] mx-auto px-4 md:px-6 pt-28 pb-20">
+      <div className="max-w-350 mx-auto px-4 md:px-6 pt-28 pb-20">
 
         {/* Demo banner */}
         
