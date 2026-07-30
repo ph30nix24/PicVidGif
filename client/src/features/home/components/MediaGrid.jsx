@@ -22,7 +22,6 @@ const MediaGrid = () => {
         return state.search.imageResults;
     }
   });
-  console.log(MEDIA_ITEMS)
 
   /* Re-run scroll animations whenever the media list or active tab changes */
   useEffect(() => {

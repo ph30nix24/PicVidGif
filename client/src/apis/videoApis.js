@@ -2,7 +2,7 @@ import axios from "axios"
 
 const VIDEO_API = `${import.meta.env.VITE_BACKEND_UPI}/picVidGif/v1/video`
 
-export const getVideo = async (query) => {
+export const getVideos = async (query) => {
     try {
         const response = await axios.get(`${VIDEO_API}/video/search`, {
             params: { query, page: 1, per_page: 20 },

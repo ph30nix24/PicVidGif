@@ -7,6 +7,7 @@ export const searchSlice = createSlice({
         activeTab: 'images',
         imageResults: [],
         videoResults: [],
+        gifResults: [],
         loading: false,
         error: null
     },
@@ -25,6 +26,10 @@ export const searchSlice = createSlice({
             state.videoResults = action.payload
             state.loading = action.false
         },
+        setGifResults: (state, action) => {
+            state.gifResults = action.payload
+            state.loading = action.false
+        },
         setLoading: (state, action) => {
             state.loading = action.payload
             state.error = null
@@ -39,6 +44,6 @@ export const searchSlice = createSlice({
     }
 })
 
-export const { setQuary, setActiveTab, setImageResults, setVideoResults, setLoading, setError } = searchSlice.actions
+export const { setQuary, setActiveTab, setImageResults, setVideoResults, setGifResults, setLoading, setError } = searchSlice.actions
 
 export default searchSlice.reducer

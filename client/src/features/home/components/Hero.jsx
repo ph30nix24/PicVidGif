@@ -2,32 +2,34 @@ import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { Search, Image, Video, Smile } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveTab, setImageResults, setLoading, setQuary, setVideoResults,  } from '../../../redux/features/searchSlice';
+import { setActiveTab, setImageResults, setLoading, setQuary, setVideoResults, setGifResults } from '../../../redux/features/searchSlice';
 import { getImages, getRandomImages } from '../../../apis/mediaApis';
 import Loader from '../../../components/Loader'
-import { getPopular } from '../../../apis/videoApis';
+import { getPopular, getVideos } from '../../../apis/videoApis';
 
 const FILTERS = [
   { id: 'images', label: 'Images', icon: Image },
   { id: 'videos', label: 'Videos', icon: Video },
-  { id: 'gifs',   label: 'GIFs',   icon: Smile },
+  { id: 'gifs', label: 'GIFs', icon: Smile },
 ];
 
 const Hero = () => {
-  const headingRef  = useRef(null);
-  const subRef      = useRef(null);
-  const searchRef   = useRef(null);
-  const filtersRef  = useRef(null);
+  const headingRef = useRef(null);
+  const subRef = useRef(null);
+  const searchRef = useRef(null);
+  const filtersRef = useRef(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const [text, setText] = useState('');
-  const dispatch     = useDispatch();
+  const dispatch = useDispatch();
   const activeFilter = useSelector((state) => state.search.activeTab);
-  const loading      = useSelector((state) => state.search.loading);
+  const loading = useSelector((state) => state.search.loading);
+
 
   useEffect(() => {
     const fetchImages = async () => {
       dispatch(setLoading(true))
       try {
+
         const data = await getRandomImages();
         dispatch(setImageResults(data));
         const vData = await getPopular()
@@ -35,7 +37,7 @@ const Hero = () => {
       } catch (error) {
         console.log(error.message);
       }
-      finally{
+      finally {
         dispatch(setLoading(false))
       }
     };
@@ -57,12 +59,12 @@ const Hero = () => {
     );
     tl.fromTo(searchRef.current,
       { y: 30, opacity: 0, scale: 0.97 },
-      { y: 0,  opacity: 1, scale: 1, duration: 0.4, ease: 'power2.out' },
+      { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: 'power2.out' },
       '-=0.3'
     );
     tl.fromTo(filtersRef.current.children,
       { y: 20, opacity: 0 },
-      { y: 0,  opacity: 1, duration: 0.4, stagger: 0.08, ease: 'power2.out' },
+      { y: 0, opacity: 1, duration: 0.4, stagger: 0.08, ease: 'power2.out' },
       '-=0.3'
     );
 
@@ -85,12 +87,27 @@ const Hero = () => {
     dispatch(setQuary(text));
     dispatch(setLoading(true))
     try {
-      const data = await getImages(text);
-      dispatch(setImageResults(data.results));
+      let data;
+      switch (activeFilter) {
+        case "videos":
+          data = await getVideos(text);
+          dispatch(setVideoResults(data.videos));
+          
+          break;
+        // case "gif":
+        //   data = await getGifs(text);
+        //   dispatch(setGifResults(data.results));
+        //   break;
+        case "image":
+        default:
+          data = await getImages(text);
+          dispatch(setImageResults(data.results));
+          break;
+      }
     } catch (error) {
       console.log(error.message);
     }
-    finally{
+    finally {
       dispatch(setLoading(false))
     }
   };
@@ -137,20 +154,18 @@ const Hero = () => {
       {/* Search Bar */}
       <div
         ref={searchRef}
-        className={`w-full max-w-2xl relative flex items-center rounded-full border transition-all duration-300 ${
-          searchFocused
+        className={`w-full max-w-2xl relative flex items-center rounded-full border transition-all duration-300 ${searchFocused
             ? 'search-border dark:bg-[#111111] bg-white dark:border-gray-500 border-indigo-400 shadow-lg dark:shadow-black/20 shadow-indigo-100'
             : 'dark:border-gray-700 border-slate-200 dark:bg-[#111111]/80 bg-white shadow-sm shadow-slate-100 dark:shadow-gray-900'
-        }`}
+          }`}
         style={{ minHeight: 56, zIndex: 20 }}
       >
         {/* Search icon */}
         <div className="pl-5 pr-3 shrink-0">
           <Search
             size={20}
-            className={`transition-colors duration-200 ${
-              searchFocused ? 'dark:text-gray-300 text-indigo-500' : 'dark:text-gray-500 text-slate-400'
-            }`}
+            className={`transition-colors duration-200 ${searchFocused ? 'dark:text-gray-300 text-indigo-500' : 'dark:text-gray-500 text-slate-400'
+              }`}
           />
         </div>
 
@@ -176,11 +191,10 @@ const Hero = () => {
             key={id}
             id={`filter-${id}`}
             onClick={() => handleFilterClick(id)}
-            className={`filter-tab flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all duration-200 cursor-pointer ${
-              activeFilter === id
+            className={`filter-tab flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all duration-200 cursor-pointer ${activeFilter === id
                 ? 'dark:bg-gray-700 bg-indigo-600 dark:border-gray-500 border-indigo-500 text-white dark:shadow-black/40 shadow-indigo-500/25 shadow-md'
                 : 'dark:bg-white/5 bg-white dark:border-white/10 border-slate-200 dark:text-gray-300 text-slate-600 dark:hover:border-gray-500/60 hover:border-indigo-300 hover:text-indigo-700 hover:bg-indigo-50'
-            }`}
+              }`}
           >
             <Icon size={15} />
             {label}
