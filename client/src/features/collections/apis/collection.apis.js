@@ -27,9 +27,9 @@ export const addInCollection = async ({ sourceId, type, url, thumbnailUrl, descr
     }
 }
 
-export const removeFromCollection = async (imageId) => {
+export const removeFromCollection = async (sourceId) => {
     try {
-        const response = await axios.delete(`${COLLECTION_API}/${imageId}`, {
+        const response = await axios.delete(`${COLLECTION_API}/${sourceId}`, {
             withCredentials: true
         })
         return response.data

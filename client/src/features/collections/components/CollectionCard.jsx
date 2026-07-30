@@ -1,6 +1,10 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useCallback } from 'react'
 import { gsap } from 'gsap'
 import { Download, Trash2, ExternalLink, Image, Video, Film, Play } from 'lucide-react'
+import { useDispatch } from 'react-redux'
+import { addToast } from '../../../redux/features/toastSlice'
+import { removeFromCollection } from '../apis/collection.apis'
+import { setCollection } from '../../../redux/features/collectionSlice'
 
 /* ─── helpers ──────────────────────────────────────────────── */
 const formatDuration = (secs) => {
@@ -11,32 +15,33 @@ const formatDuration = (secs) => {
 }
 
 const typeConfig = {
-  video: { icon: Video,  label: 'Video', color: 'bg-indigo-500/80 border-indigo-400/30' },
-  gif:   { icon: Film,   label: 'GIF',   color: 'bg-emerald-500/80 border-emerald-400/30' },
-  image: { icon: Image,  label: 'Image', color: 'bg-black/60 border-white/10' },
+  video: { icon: Video, label: 'Video', color: 'bg-indigo-500/80 border-indigo-400/30' },
+  gif: { icon: Film, label: 'GIF', color: 'bg-emerald-500/80 border-emerald-400/30' },
+  image: { icon: Image, label: 'Image', color: 'bg-black/60 border-white/10' },
 }
 
 /* ─── component ────────────────────────────────────────────── */
-const CollectionCard = ({ item, onRemove }) => {
-  const cardRef    = useRef(null)
+const CollectionCard = ({ item }) => {
+  const cardRef = useRef(null)
   const overlayRef = useRef(null)
   const actionsRef = useRef(null)
-  const playRef    = useRef(null)
-  const videoRef   = useRef(null)
-  const imgRef     = useRef(null)
-  const [removing, setRemoving] = useState(false)
+  const playRef = useRef(null)
+  const videoRef = useRef(null)
+  const imgRef = useRef(null)
+
+  const dispatch = useDispatch()
 
   /* normalise type — backend may return any casing */
   const itemType = (item.type || 'image').toLowerCase()
-  const isVideo  = itemType === 'video'
-  const isGif    = itemType === 'gif'
-  const cfg      = typeConfig[itemType] ?? typeConfig.image
+  const isVideo = itemType === 'video'
+  const isGif = itemType === 'gif'
+  const cfg = typeConfig[itemType] ?? typeConfig.image
 
   /* duration is only meaningful for videos */
   const duration = isVideo ? formatDuration(item.duration) : null
 
   /* GIF: thumbnailUrl = still frame, url = animated */
-  const gifStill    = item.thumbnailUrl || item.urls?.small || item.src
+  const gifStill = item.thumbnailUrl || item.urls?.small || item.src
   const gifAnimated = item.url || item.thumbnailUrl
 
   /* ── hover ── */
@@ -58,7 +63,7 @@ const CollectionCard = ({ item, onRemove }) => {
     /* autoplay video preview on hover */
     if (isVideo && videoRef.current && item.url) {
       videoRef.current.style.opacity = '1'
-      videoRef.current.play().catch(() => {})
+      videoRef.current.play().catch(() => { })
     }
     /* GIF: swap still → animated */
     if (isGif && imgRef.current) {
@@ -85,14 +90,16 @@ const CollectionCard = ({ item, onRemove }) => {
   }, [isVideo, isGif, gifStill])
 
   /* ── remove ── */
-  const handleRemove = async (e) => {
-    e.stopPropagation()
-    if (removing) return
-    setRemoving(true)
-    gsap.to(cardRef.current, {
-      scale: 0.85, opacity: 0, y: -20, duration: 0.4, ease: 'power2.in',
-      onComplete: () => onRemove && onRemove(item.id || item._id),
-    })
+  const handleRemove = async (sourceId) => {
+    try {
+      console.log(item.sourceId)
+      const result = await removeFromCollection(sourceId)
+      dispatch(setCollection(result.data.items))
+      dispatch(addToast('SuccessFul', "success"))
+    } catch (e) {
+      dispatch(addToast(`Failed ${e.response?.data.message}`, "error"))
+    }
+
   }
 
   /* ── download ── */
@@ -186,7 +193,7 @@ const CollectionCard = ({ item, onRemove }) => {
           <div className="flex items-center gap-2">
             <button
               onClick={handleDownload}
-              className="w-8 h-8 rounded-full bg-indigo-500/80 backdrop-blur-md border border-indigo-400/40 flex items-center justify-center text-white hover:bg-indigo-400/90 transition-all duration-200"
+              className="w-8 h-8 rounded-full bg-indigo-500/80 backdrop-blur-md border border-indigo-400/40 flex items-center justify-center text-white hover:bg-indigo-400/90 transition-all duration-200 cursor-pointer"
               aria-label="Download"
             >
               <Download size={13} />
@@ -201,9 +208,8 @@ const CollectionCard = ({ item, onRemove }) => {
             </a>
           </div>
           <button
-            onClick={handleRemove}
-            disabled={removing}
-            className="w-8 h-8 rounded-full bg-red-500/70 backdrop-blur-md border border-red-400/40 flex items-center justify-center text-white hover:bg-red-500/90 transition-all duration-200 disabled:opacity-50"
+            onClick={() => handleRemove(item.sourceId)}
+            className="w-8 h-8 rounded-full bg-red-500/70 backdrop-blur-md border border-red-400/40 flex items-center justify-center text-white hover:bg-red-500/90 transition-all duration-200 disabled:opacity-50 cursor-pointer"
             aria-label="Remove from collection"
           >
             <Trash2 size={13} />
