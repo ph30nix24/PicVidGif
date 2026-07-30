@@ -15,7 +15,7 @@ const MediaGrid = () => {
     switch (activeTab) {
       case 'videos':
         return state.search.videoResults;
-      case 'gif':
+      case 'gifs':
         return state.search.gifResults ?? [];
       case 'images':
       default:
@@ -62,7 +62,7 @@ const MediaGrid = () => {
       className="relative px-4 md:px-6 pb-20 max-w-[1400px] mx-auto w-full pt-10"
       style={{ zIndex: 0 }}
     >
-      <div ref={gridRef} className={`masonry-grid ${activeTab === 'videos' ? 'masonry-grid--video' : ''}`}>
+      <div ref={gridRef} className={`masonry-grid ${activeTab === 'videos' ? 'masonry-grid--video' : ''} ${activeTab === 'gifs' ? 'masonry-grid--gif' : ''}`}>
         {MEDIA_ITEMS.map((item) => (
           <MediaCard key={item.id} item={item} type={activeTab} />
         ))}
@@ -70,8 +70,16 @@ const MediaGrid = () => {
 
       {MEDIA_ITEMS.length === 0 && (
         <div className="flex flex-col items-center justify-center py-32 gap-3 dark:text-gray-600 text-gray-400">
-          <span className="text-5xl">🎬</span>
-          <p className="text-sm font-medium">No results yet — search for something!</p>
+          <span className="text-5xl">
+            {activeTab === 'videos' ? '🎬' : activeTab === 'gifs' ? '🎞️' : '🖼️'}
+          </span>
+          <p className="text-sm font-medium">
+            {activeTab === 'videos'
+              ? 'No videos yet — search for something!'
+              : activeTab === 'gifs'
+              ? 'No GIFs yet — search for something!'
+              : 'No images yet — search for something!'}
+          </p>
         </div>
       )}
     </section>

@@ -3,8 +3,8 @@ import { getPopularVideos, searchVideos } from '../controllers/video.controller.
 
 const videoRouter = Router();
 
-videoRouter.get('/video/search', searchVideos)
+videoRouter.get('/search', searchVideos)
 
-videoRouter.get('/video/popular', getPopularVideos)
+videoRouter.get('/popular', getPopularVideos)
 
 export default videoRouter;

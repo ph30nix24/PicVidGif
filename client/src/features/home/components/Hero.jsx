@@ -6,6 +6,7 @@ import { setActiveTab, setImageResults, setLoading, setQuary, setVideoResults, s
 import { getImages, getRandomImages } from '../../../apis/mediaApis';
 import Loader from '../../../components/Loader'
 import { getPopular, getVideos } from '../../../apis/videoApis';
+import { getGifs, getPopularGifs } from '../../../apis/gifsApis';
 
 const FILTERS = [
   { id: 'images', label: 'Images', icon: Image },
@@ -34,6 +35,8 @@ const Hero = () => {
         dispatch(setImageResults(data));
         const vData = await getPopular()
         dispatch(setVideoResults(vData.videos));
+        const gifData = await getPopularGifs();
+        dispatch(setGifResults(gifData.data))
       } catch (error) {
         console.log(error.message);
       }
@@ -94,10 +97,11 @@ const Hero = () => {
           dispatch(setVideoResults(data.videos));
           
           break;
-        // case "gif":
-        //   data = await getGifs(text);
-        //   dispatch(setGifResults(data.results));
-        //   break;
+        case "gifs":
+          data = await getGifs(text);
+          console.log(data)
+          dispatch(setGifResults(data.data));
+          break;
         case "image":
         default:
           data = await getImages(text);

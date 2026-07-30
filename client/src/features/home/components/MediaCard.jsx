@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
-import { Download, Heart, Play } from 'lucide-react';
+import { Download, Heart, Play, Film } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { addToast } from '../../../redux/features/toastSlice';
 import { addInCollection } from '../../collections/apis/collection.apis';
@@ -21,27 +21,48 @@ const pickVideoSrc = (videoFiles = []) => {
   return (hd || sd || videoFiles[0])?.link ?? null;
 };
 
+/**
+ * Giphy object helpers
+ * Static (still) thumbnail — shown before hover
+ * Animated url — swapped in on hover
+ */
+const gifStill = (item) =>
+  item.images?.fixed_width_still?.url ||
+  item.images?.downsized_still?.url ||
+  item.images?.fixed_width?.url ||
+  item.images?.original?.url || '';
+
+const gifAnimated = (item) =>
+  item.images?.fixed_width?.url ||
+  item.images?.downsized?.url ||
+  item.images?.original?.url || '';
+
 /* ─── component ───────────────────────────────────────────── */
-const MediaCard = ({ item, type = 'image' }) => {
+const MediaCard = ({ item, type = 'images' }) => {
   const cardRef    = useRef(null);
   const overlayRef = useRef(null);
   const playRef    = useRef(null);
   const actionsRef = useRef(null);
   const videoRef   = useRef(null);
+  const imgRef     = useRef(null);
   const [liked, setLiked] = useState(false);
   const dispatch = useDispatch();
 
   const isVideo = type === 'videos';
+  const isGif   = type === 'gifs';
 
-  /* thumbnail: Pexels videos use `image`, Unsplash images use `urls` */
+  /* ── source resolution ── */
   const thumbnail = isVideo
     ? item.image
-    : (item.urls?.regular || item.src);
+    : isGif
+      ? gifStill(item)
+      : (item.urls?.regular || item.src);
 
-  const videoSrc = isVideo ? pickVideoSrc(item.video_files) : null;
-  const duration = isVideo ? formatDuration(item.duration) : null;
+  const videoSrc    = isVideo ? pickVideoSrc(item.video_files) : null;
+  const gifAnimSrc  = isGif   ? gifAnimated(item)              : null;
+  const duration    = isVideo ? formatDuration(item.duration)  : null;
 
-  /* ── hover handlers ── */
+  /* ── hover ── */
   const handleMouseEnter = useCallback(() => {
     gsap.to(cardRef.current, { y: -5, scale: 1.02, duration: 0.35, ease: 'power2.out' });
     gsap.to(overlayRef.current, { opacity: 1, duration: 0.25, ease: 'power2.out' });
@@ -61,12 +82,17 @@ const MediaCard = ({ item, type = 'image' }) => {
       );
     }
 
-    /* autoplay video on hover */
+    /* video: fade in native <video> and play */
     if (isVideo && videoRef.current && videoSrc) {
       videoRef.current.style.opacity = '1';
       videoRef.current.play().catch(() => {});
     }
-  }, [isVideo, videoSrc]);
+
+    /* gif: swap still → animated src */
+    if (isGif && imgRef.current && gifAnimSrc) {
+      imgRef.current.src = gifAnimSrc;
+    }
+  }, [isVideo, isGif, videoSrc, gifAnimSrc]);
 
   const handleMouseLeave = useCallback(() => {
     gsap.to(cardRef.current, { y: 0, scale: 1, duration: 0.35, ease: 'power2.out' });
@@ -79,13 +105,18 @@ const MediaCard = ({ item, type = 'image' }) => {
       gsap.to(actionsRef.current, { y: 10, opacity: 0, duration: 0.2, ease: 'power2.in' });
     }
 
-    /* pause + reset video on leave */
+    /* video: pause + reset */
     if (isVideo && videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
       videoRef.current.style.opacity = '0';
     }
-  }, [isVideo]);
+
+    /* gif: swap animated → still */
+    if (isGif && imgRef.current) {
+      imgRef.current.src = thumbnail;
+    }
+  }, [isVideo, isGif, thumbnail]);
 
   /* ── like / save ── */
   const handleLike = async (e) => {
@@ -97,21 +128,32 @@ const MediaCard = ({ item, type = 'image' }) => {
       { scale: 1, duration: 0.4, ease: 'elastic.out(1.5, 0.4)' }
     );
     try {
-      const payload = isVideo
-        ? {
-            sourceId: String(item.id),
-            type: 'video',
-            url: videoSrc,
-            thumbnailUrl: item.image,
-            description: item.user?.name ? `Video by ${item.user.name}` : '',
-          }
-        : {
-            sourceId: item.id,
-            type: 'image',
-            url: item.urls?.regular,
-            thumbnailUrl: item.urls?.thumb,
-            description: item.alt_description || item.description || '',
-          };
+      let payload;
+      if (isVideo) {
+        payload = {
+          sourceId: String(item.id),
+          type: 'video',
+          url: videoSrc,
+          thumbnailUrl: item.image,
+          description: item.user?.name ? `Video by ${item.user.name}` : '',
+        };
+      } else if (isGif) {
+        payload = {
+          sourceId: String(item.id),
+          type: 'gif',
+          url: gifAnimSrc,
+          thumbnailUrl: gifStill(item),
+          description: item.title || '',
+        };
+      } else {
+        payload = {
+          sourceId: item.id,
+          type: 'image',
+          url: item.urls?.regular,
+          thumbnailUrl: item.urls?.thumb,
+          description: item.alt_description || item.description || '',
+        };
+      }
       const result = await addInCollection(payload);
       dispatch(addToast(`Successful ${result.message}`, 'success'));
     } catch (error) {
@@ -119,8 +161,8 @@ const MediaCard = ({ item, type = 'image' }) => {
     }
   };
 
-  /* ── Let both images and videos render at their natural height for true masonry flow ── */
-  const imgClass = `w-full object-cover block ${isVideo ? '' : (item.height ?? '')}`;
+  /* ── natural height for all types — true masonry flow ── */
+  const imgClass = `w-full object-cover block ${(!isVideo && !isGif) ? (item.height ?? '') : ''}`;
 
   return (
     <div
@@ -132,16 +174,21 @@ const MediaCard = ({ item, type = 'image' }) => {
     >
       <div className="relative rounded-xl overflow-hidden dark:bg-[#111111] bg-white shadow-md dark:shadow-black/40 shadow-gray-200 transition-shadow duration-300 hover:shadow-xl dark:hover:shadow-black/60 hover:shadow-gray-300/60">
 
-        {/* ── Thumbnail (always visible) ── */}
+        {/* ── Thumbnail / GIF still (always visible) ── */}
         <img
+          ref={isGif ? imgRef : undefined}
           src={thumbnail}
-          alt={item?.alt ?? (item?.user?.name ? `Video by ${item.user.name}` : 'media')}
+          alt={
+            item?.alt ??
+            item?.title ??
+            (item?.user?.name ? `Video by ${item.user.name}` : 'media')
+          }
           className={imgClass}
           loading="lazy"
           draggable={false}
         />
 
-        {/* ── Native video (videos only) — fades in on hover, positioned to match thumbnail ── */}
+        {/* ── Native video (videos only) — fades in on hover ── */}
         {isVideo && videoSrc && (
           <video
             ref={videoRef}
@@ -177,17 +224,35 @@ const MediaCard = ({ item, type = 'image' }) => {
           </div>
         )}
 
-        {/* ── Duration badge ── */}
+        {/* ── GIF animated badge (top-left) ── */}
+        {isGif && (
+          <div className="absolute top-2 left-2 flex items-center gap-1 bg-emerald-500/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-400/30 tracking-widest uppercase">
+            <Film size={10} />
+            <span>GIF</span>
+          </div>
+        )}
+
+        {/* ── Video HD badge (top-left) ── */}
+        {isVideo && (
+          <div className="absolute top-2 left-2 bg-indigo-500/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-md border border-indigo-400/30 tracking-widest uppercase">
+            HD
+          </div>
+        )}
+
+        {/* ── Duration badge (videos) ── */}
         {duration && (
           <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm text-white text-xs font-semibold px-2 py-0.5 rounded-md border border-white/10 tracking-wide">
             {duration}
           </div>
         )}
 
-        {/* ── Video quality / type badge ── */}
-        {isVideo && (
-          <div className="absolute top-2 left-2 bg-indigo-500/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-md border border-indigo-400/30 tracking-widest uppercase">
-            HD
+        {/* ── "Hover to animate" hint badge (GIFs, top-right) ── */}
+        {isGif && (
+          <div
+            ref={playRef}
+            className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white/80 text-[10px] font-medium px-2 py-0.5 rounded-md border border-white/10 opacity-0 pointer-events-none"
+          >
+            ▶ Animated
           </div>
         )}
 
@@ -212,10 +277,15 @@ const MediaCard = ({ item, type = 'image' }) => {
           </button>
         </div>
 
-        {/* ── Photographer credit (videos) ── */}
+        {/* ── Credit (videos & GIFs) ── */}
         {isVideo && item.user?.name && (
           <div className="absolute bottom-3 right-3 text-white/60 text-[10px] font-medium truncate max-w-[100px]">
             {item.user.name}
+          </div>
+        )}
+        {isGif && item.username && (
+          <div className="absolute bottom-3 right-3 text-white/60 text-[10px] font-medium truncate max-w-[100px]">
+            @{item.username}
           </div>
         )}
       </div>
