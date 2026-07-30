@@ -186,7 +186,7 @@ const CollectionGrid = ({ items, onRemove }) => {
           </div>
         )
       ) : (
-        <div ref={gridRef} className="masonry-grid">
+        <div ref={gridRef} className={`masonry-grid ${activeFilter === 'video' ? 'masonry-grid--video' : ''}`}>
           {processed.map((item) => (
             <CollectionCard key={item.id || item._id} item={item} onRemove={onRemove} />
           ))}

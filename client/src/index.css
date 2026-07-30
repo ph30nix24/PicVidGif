@@ -85,6 +85,11 @@ html {
 @media (max-width: 480px)  { .masonry-grid { columns: 1; } }
 .masonry-item { break-inside: avoid; margin-bottom: 12px; }
 
+/* ─── Video grid: fewer, wider columns suit 16:9 aspect ratios ─── */
+.masonry-grid--video { columns: 3; }
+@media (max-width: 1200px) { .masonry-grid--video { columns: 2; } }
+@media (max-width: 768px)  { .masonry-grid--video { columns: 1; } }
+
 /* ─── Filter tab shimmer (::after pseudo-element can't be Tailwind inline) ─── */
 .filter-tab {
   transition: all 0.2s ease;

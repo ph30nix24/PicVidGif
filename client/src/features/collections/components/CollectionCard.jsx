@@ -1,49 +1,90 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useCallback } from 'react'
 import { gsap } from 'gsap'
-import { Download, Trash2, ExternalLink, Image, Video, Film } from 'lucide-react'
+import { Download, Trash2, ExternalLink, Image, Video, Film, Play } from 'lucide-react'
 
-const typeIcon = (type) => {
-  if (type === 'gif') return <Film size={11} />
-  if (type === 'video') return <Video size={11} />
-  return <Image size={11} />
+/* ─── helpers ──────────────────────────────────────────────── */
+const formatDuration = (secs) => {
+  if (!secs && secs !== 0) return null
+  const m = Math.floor(secs / 60)
+  const s = Math.floor(secs % 60)
+  return `${m}:${s.toString().padStart(2, '0')}`
 }
 
+const typeConfig = {
+  video: { icon: Video,  label: 'Video', color: 'bg-indigo-500/80 border-indigo-400/30' },
+  gif:   { icon: Film,   label: 'GIF',   color: 'bg-emerald-500/80 border-emerald-400/30' },
+  image: { icon: Image,  label: 'Image', color: 'bg-black/60 border-white/10' },
+}
+
+/* ─── component ────────────────────────────────────────────── */
 const CollectionCard = ({ item, onRemove }) => {
   const cardRef    = useRef(null)
   const overlayRef = useRef(null)
   const actionsRef = useRef(null)
+  const playRef    = useRef(null)
+  const videoRef   = useRef(null)
   const [removing, setRemoving] = useState(false)
 
-  const handleMouseEnter = () => {
+  const isVideo = item.type === 'video'
+  const cfg     = typeConfig[item.type] ?? typeConfig.image
+
+  /* duration is only meaningful for videos */
+  const duration = isVideo ? formatDuration(item.duration) : null
+
+  /* ── hover ── */
+  const handleMouseEnter = useCallback(() => {
     gsap.to(cardRef.current, { y: -6, scale: 1.02, duration: 0.3, ease: 'power2.out' })
     gsap.to(overlayRef.current, { opacity: 1, duration: 0.25 })
-    gsap.fromTo(actionsRef.current,
+    gsap.fromTo(
+      actionsRef.current,
       { y: 14, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.28, ease: 'power2.out', delay: 0.05 }
     )
-  }
+    if (playRef.current) {
+      gsap.fromTo(
+        playRef.current,
+        { scale: 0.6, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(2)' }
+      )
+    }
+    /* autoplay video preview on hover */
+    if (isVideo && videoRef.current && item.url) {
+      videoRef.current.style.opacity = '1'
+      videoRef.current.play().catch(() => {})
+    }
+  }, [isVideo, item.url])
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     gsap.to(cardRef.current, { y: 0, scale: 1, duration: 0.3, ease: 'power2.out' })
     gsap.to(overlayRef.current, { opacity: 0, duration: 0.2 })
     gsap.to(actionsRef.current, { y: 10, opacity: 0, duration: 0.2, ease: 'power2.in' })
-  }
+    if (playRef.current) {
+      gsap.to(playRef.current, { scale: 0.6, opacity: 0, duration: 0.2, ease: 'power2.in' })
+    }
+    if (isVideo && videoRef.current) {
+      videoRef.current.pause()
+      videoRef.current.currentTime = 0
+      videoRef.current.style.opacity = '0'
+    }
+  }, [isVideo])
 
+  /* ── remove ── */
   const handleRemove = async (e) => {
     e.stopPropagation()
     if (removing) return
     setRemoving(true)
     gsap.to(cardRef.current, {
       scale: 0.85, opacity: 0, y: -20, duration: 0.4, ease: 'power2.in',
-      onComplete: () => onRemove && onRemove(item.id || item._id)
+      onComplete: () => onRemove && onRemove(item.id || item._id),
     })
   }
 
+  /* ── download ── */
   const handleDownload = (e) => {
     e.stopPropagation()
     const link = document.createElement('a')
-    link.href = item.url || item.urls?.raw || item.src
-    link.download = item.alt || 'download'
+    link.href = item.url || item.thumbnailUrl || item.urls?.raw || item.src
+    link.download = item.description || item.alt || 'download'
     link.target = '_blank'
     link.click()
   }
@@ -58,31 +99,64 @@ const CollectionCard = ({ item, onRemove }) => {
     >
       <div className="relative rounded-xl overflow-hidden dark:bg-[#111] bg-white shadow-md dark:shadow-black/40 shadow-gray-200 transition-shadow duration-300 hover:shadow-xl dark:hover:shadow-black/60 hover:shadow-indigo-100/60">
 
-        {/* Media thumbnail */}
+        {/* ── Thumbnail (natural height — no forced aspect ratio) ── */}
         <img
-          src={item.url || item.urls?.small || item.src}
-          alt={item.alt || 'Collection item'}
+          src={item.thumbnailUrl || item.urls?.small || item.src}
+          alt={item.description || item.alt || 'Collection item'}
           className="w-full object-cover block"
           loading="lazy"
           draggable={false}
         />
 
-        {/* Type badge */}
-        {item.type && (
-          <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-1 rounded-full border border-white/10 uppercase tracking-wide">
-            {typeIcon(item.type)}
-            <span>{item.type}</span>
-          </div>
+        {/* ── Hover video (videos only) ── */}
+        {isVideo && item.url && (
+          <video
+            ref={videoRef}
+            src={item.url}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+            style={{ opacity: 0 }}
+            muted
+            loop
+            playsInline
+            preload="none"
+          />
         )}
 
-        {/* Overlay */}
+        {/* ── Overlay gradient ── */}
         <div
           ref={overlayRef}
           className="absolute inset-0 opacity-0"
           style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.18) 55%, rgba(0,0,0,0.04) 100%)' }}
         />
 
-        {/* Action buttons */}
+        {/* ── Play button (videos only) ── */}
+        {isVideo && (
+          <div
+            ref={playRef}
+            className="absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none"
+          >
+            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center play-btn">
+              <Play size={20} className="text-white fill-white ml-0.5" />
+            </div>
+          </div>
+        )}
+
+        {/* ── Type badge (top-left) ── */}
+        {item.type && (
+          <div className={`absolute top-2 left-2 flex items-center gap-1 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full border uppercase tracking-wider ${cfg.color}`}>
+            <cfg.icon size={10} />
+            <span>{cfg.label}</span>
+          </div>
+        )}
+
+        {/* ── Duration badge for videos (top-right) ── */}
+        {duration && (
+          <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm text-white text-xs font-semibold px-2 py-0.5 rounded-md border border-white/10 tracking-wide">
+            {duration}
+          </div>
+        )}
+
+        {/* ── Action buttons ── */}
         <div ref={actionsRef} className="absolute bottom-3 left-3 right-3 flex items-center justify-between opacity-0">
           <div className="flex items-center gap-2">
             <button
@@ -110,6 +184,13 @@ const CollectionCard = ({ item, onRemove }) => {
             <Trash2 size={13} />
           </button>
         </div>
+
+        {/* ── Description / credit (bottom-right, visible on hover via overlay) ── */}
+        {item.description && (
+          <div className="absolute bottom-3 right-12 text-white/50 text-[10px] font-medium truncate max-w-[90px]">
+            {item.description}
+          </div>
+        )}
       </div>
     </div>
   )

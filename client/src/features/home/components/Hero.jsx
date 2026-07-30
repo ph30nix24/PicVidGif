@@ -2,9 +2,10 @@ import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { Search, Image, Video, Smile } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveTab, setLoading, setQuary, setResults } from '../../../redux/features/searchSlice';
+import { setActiveTab, setImageResults, setLoading, setQuary, setVideoResults,  } from '../../../redux/features/searchSlice';
 import { getImages, getRandomImages } from '../../../apis/mediaApis';
 import Loader from '../../../components/Loader'
+import { getPopular } from '../../../apis/videoApis';
 
 const FILTERS = [
   { id: 'images', label: 'Images', icon: Image },
@@ -28,7 +29,9 @@ const Hero = () => {
       dispatch(setLoading(true))
       try {
         const data = await getRandomImages();
-        dispatch(setResults(data));
+        dispatch(setImageResults(data));
+        const vData = await getPopular()
+        dispatch(setVideoResults(vData.videos));
       } catch (error) {
         console.log(error.message);
       }
@@ -83,7 +86,7 @@ const Hero = () => {
     dispatch(setLoading(true))
     try {
       const data = await getImages(text);
-      dispatch(setResults(data.results));
+      dispatch(setImageResults(data.results));
     } catch (error) {
       console.log(error.message);
     }

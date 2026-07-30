@@ -5,7 +5,8 @@ export const searchSlice = createSlice({
     initialState: {
         quary: '',
         activeTab: 'images',
-        results: [],
+        imageResults: [],
+        videoResults: [],
         loading: false,
         error: null
     },
@@ -16,9 +17,13 @@ export const searchSlice = createSlice({
         setActiveTab: (state, action) => {
             state.activeTab = action.payload
         },
-        setResults: (state, action) => {
-            state.results = action.payload
+        setImageResults: (state, action) => {
+            state.imageResults = action.payload
             state.loading = false
+        },
+        setVideoResults: (state, action) => {
+            state.videoResults = action.payload
+            state.loading = action.false
         },
         setLoading: (state, action) => {
             state.loading = action.payload
@@ -34,6 +39,6 @@ export const searchSlice = createSlice({
     }
 })
 
-export const { setQuary, setActiveTab, setResults, setLoading, setError } = searchSlice.actions
+export const { setQuary, setActiveTab, setImageResults, setVideoResults, setLoading, setError } = searchSlice.actions
 
 export default searchSlice.reducer

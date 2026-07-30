@@ -48,18 +48,20 @@ const Navbar = () => {
         }`}
     >
       {/* Logo */}
-      <div
-        ref={logoRef}
-        onMouseEnter={handleLogoHover}
-        onMouseLeave={handleLogoLeave}
-        className="cursor-pointer select-none"
-        style={{ transformOrigin: 'left center' }}
-      >
-        <span className="text-xl font-bold tracking-tight">
-          <span className="dark:text-white text-gray-900 font-black">PicVid</span>
-          <span className="gradient-text font-black">Gif</span>
-        </span>
-      </div>
+      <a href="/">
+        <div
+          ref={logoRef}
+          onMouseEnter={handleLogoHover}
+          onMouseLeave={handleLogoLeave}
+          className="cursor-pointer select-none"
+          style={{ transformOrigin: 'left center' }}
+        >
+          <span className="text-xl font-bold tracking-tight">
+            <span className="dark:text-white text-gray-900 font-black">PicVid</span>
+            <span className="gradient-text font-black">Gif</span>
+          </span>
+        </div>
+      </a>
 
       {/* Right side nav */}
       <div ref={rightRef} className="flex items-center gap-3">
@@ -106,7 +108,7 @@ const Navbar = () => {
             <button className='relative flex items-center gap-2 group'>
               <div className='w-fit px-8 py-2 rounded-full bg-linear-to-br from-indigo-500 to-indigo-700 dark:from-gray-500 dark:to-gray-700 flex items-center justify-center text-white font-bold text-sm ring-2 dark:ring-gray-600/30 ring-indigo-200 dark:group-hover:ring-gray-400/50 group-hover:ring-indigo-400 transition-all duration-200 cursor-pointer gap-2'>
                 <span>Login</span>
-                <LogIn size={14}/>
+                <LogIn size={14} />
               </div>
             </button>
           </a>
