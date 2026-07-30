@@ -49,7 +49,7 @@ const MediaCard = ({ item, type = 'images' }) => {
   const dispatch = useDispatch();
 
   const isVideo = type === 'videos';
-  const isGif   = type === 'gifs';
+  const isGif = type === 'gifs';
 
   /* ── source resolution ── */
   const thumbnail = isVideo

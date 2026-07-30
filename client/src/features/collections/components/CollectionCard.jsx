@@ -23,13 +23,21 @@ const CollectionCard = ({ item, onRemove }) => {
   const actionsRef = useRef(null)
   const playRef    = useRef(null)
   const videoRef   = useRef(null)
+  const imgRef     = useRef(null)
   const [removing, setRemoving] = useState(false)
 
-  const isVideo = item.type === 'video'
-  const cfg     = typeConfig[item.type] ?? typeConfig.image
+  /* normalise type — backend may return any casing */
+  const itemType = (item.type || 'image').toLowerCase()
+  const isVideo  = itemType === 'video'
+  const isGif    = itemType === 'gif'
+  const cfg      = typeConfig[itemType] ?? typeConfig.image
 
   /* duration is only meaningful for videos */
   const duration = isVideo ? formatDuration(item.duration) : null
+
+  /* GIF: thumbnailUrl = still frame, url = animated */
+  const gifStill    = item.thumbnailUrl || item.urls?.small || item.src
+  const gifAnimated = item.url || item.thumbnailUrl
 
   /* ── hover ── */
   const handleMouseEnter = useCallback(() => {
@@ -52,7 +60,11 @@ const CollectionCard = ({ item, onRemove }) => {
       videoRef.current.style.opacity = '1'
       videoRef.current.play().catch(() => {})
     }
-  }, [isVideo, item.url])
+    /* GIF: swap still → animated */
+    if (isGif && imgRef.current) {
+      imgRef.current.src = gifAnimated
+    }
+  }, [isVideo, isGif, item.url, gifAnimated])
 
   const handleMouseLeave = useCallback(() => {
     gsap.to(cardRef.current, { y: 0, scale: 1, duration: 0.3, ease: 'power2.out' })
@@ -66,7 +78,11 @@ const CollectionCard = ({ item, onRemove }) => {
       videoRef.current.currentTime = 0
       videoRef.current.style.opacity = '0'
     }
-  }, [isVideo])
+    /* GIF: swap animated → still */
+    if (isGif && imgRef.current) {
+      imgRef.current.src = gifStill
+    }
+  }, [isVideo, isGif, gifStill])
 
   /* ── remove ── */
   const handleRemove = async (e) => {
@@ -99,8 +115,9 @@ const CollectionCard = ({ item, onRemove }) => {
     >
       <div className="relative rounded-xl overflow-hidden dark:bg-[#111] bg-white shadow-md dark:shadow-black/40 shadow-gray-200 transition-shadow duration-300 hover:shadow-xl dark:hover:shadow-black/60 hover:shadow-indigo-100/60">
 
-        {/* ── Thumbnail (natural height — no forced aspect ratio) ── */}
+        {/* ── Thumbnail / GIF still (natural height — no forced aspect ratio) ── */}
         <img
+          ref={isGif ? imgRef : undefined}
           src={item.thumbnailUrl || item.urls?.small || item.src}
           alt={item.description || item.alt || 'Collection item'}
           className="w-full object-cover block"
@@ -129,7 +146,7 @@ const CollectionCard = ({ item, onRemove }) => {
           style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.18) 55%, rgba(0,0,0,0.04) 100%)' }}
         />
 
-        {/* ── Play button (videos only) ── */}
+        {/* ── Play button (videos) / Animated hint (GIFs) ── */}
         {isVideo && (
           <div
             ref={playRef}
@@ -138,6 +155,14 @@ const CollectionCard = ({ item, onRemove }) => {
             <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center play-btn">
               <Play size={20} className="text-white fill-white ml-0.5" />
             </div>
+          </div>
+        )}
+        {isGif && (
+          <div
+            ref={playRef}
+            className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white/90 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-white/10 opacity-0 pointer-events-none"
+          >
+            ▶ Animated
           </div>
         )}
 

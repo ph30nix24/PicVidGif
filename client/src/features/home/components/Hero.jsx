@@ -99,7 +99,6 @@ const Hero = () => {
           break;
         case "gifs":
           data = await getGifs(text);
-          console.log(data)
           dispatch(setGifResults(data.data));
           break;
         case "image":
