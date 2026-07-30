@@ -21,14 +21,17 @@ export const addItemToCollection = async (req, res, next) => {
     try {
         const { sourceId, type, url, thumbnailUrl, description } = req.body;
 
+        // Ensure a collection exists for this user first
+        await Collection.findOneAndUpdate(
+            { user: req.user._id },
+            { $setOnInsert: { user: req.user._id, name: `${req.user.name}'s Collection` } },
+            { upsert: true }
+        );
+
         const collection = await Collection.findOneAndUpdate(
-            { user: req.user._id, "items.sourceId": { $ne: sourceId } }, // skip if already saved
-            {
-                $push: {
-                    items: { sourceId, type, url, thumbnailUrl, description }
-                }
-            },
-            { new: true }
+            { user: req.user._id, "items.sourceId": { $ne: sourceId } },
+            { $push: { items: { sourceId, type, url, thumbnailUrl, description } } },
+            { returnDocument: 'after' }
         );
 
         if (!collection) {
