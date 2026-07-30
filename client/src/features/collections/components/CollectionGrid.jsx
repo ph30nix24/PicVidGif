@@ -30,7 +30,7 @@ const EmptyState = () => {
 
   return (
     <div ref={ref} className="flex flex-col items-center justify-center py-24 gap-5 text-center">
-      <div className="w-20 h-20 rounded-3xl dark:bg-white/[0.04] bg-indigo-50 border dark:border-white/[0.07] border-indigo-100 flex items-center justify-center">
+      <div className="w-20 h-20 rounded-3xl dark:bg-white/4 bg-indigo-50 border dark:border-white/[0.07] border-indigo-100 flex items-center justify-center">
         <Inbox size={36} className="dark:text-gray-600 text-indigo-300" />
       </div>
       <div>
@@ -40,7 +40,7 @@ const EmptyState = () => {
         </p>
       </div>
       <a href="/">
-        <button className="mt-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-sm font-semibold hover:from-indigo-400 hover:to-indigo-500 transition-all duration-200 shadow-lg shadow-indigo-500/25">
+        <button className="mt-2 px-6 py-2.5 rounded-xl bg-linear-to-r from-indigo-500 to-indigo-600 text-white text-sm font-semibold hover:from-indigo-400 hover:to-indigo-500 transition-all duration-200 shadow-lg shadow-indigo-500/25">
           Browse Media
         </button>
       </a>
@@ -54,7 +54,7 @@ const CollectionGrid = ({ items, onRemove }) => {
   const [sortBy, setSortBy] = useState('newest')
   const [searchQuery, setSearchQuery] = useState('')
   const [showSort, setShowSort] = useState(false)
-  const tabLineRef = useRef(null)
+
 
   // Filter + sort + search
   const processed = items
@@ -102,7 +102,7 @@ const CollectionGrid = ({ items, onRemove }) => {
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         {/* Filter tabs */}
-        <div className="flex items-center gap-1 p-1 rounded-xl dark:bg-white/[0.04] bg-white border dark:border-white/[0.07] border-slate-200 self-start">
+        <div className="flex items-center gap-1 p-1 rounded-xl dark:bg-white/4 bg-white border dark:border-white/[0.07] border-slate-200 self-start">
           {FILTER_TABS.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
