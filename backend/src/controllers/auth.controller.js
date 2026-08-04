@@ -28,7 +28,6 @@ export const login = async (req, res, next) => {
         })
 
         const isProduction = process.env.NODE_ENV === "production";
-        console.log(isProduction, " NODE_ENV: ", process.env.NODE_ENV)
 
         res.cookie("session", sessionID, {
             httpOnly: true,

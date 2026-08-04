@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const GIFS_API = `${import.meta.env.VITE_BACKEND_UPI}/picVidGif/v1/gifs`
+const GIFS_API = `${import.meta.env.VITE_BACKEND_URI}/picVidGif/v1/gifs`
 
 export const getGifs = async (query) => {
     try {

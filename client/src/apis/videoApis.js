@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const VIDEO_API = `${import.meta.env.VITE_BACKEND_UPI}/picVidGif/v1/video`
+const VIDEO_API = `${import.meta.env.VITE_BACKEND_URI}/picVidGif/v1/video`
 
 export const getVideos = async (query) => {
     try {

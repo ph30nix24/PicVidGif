@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const AUTH_UPI = `${import.meta.env.VITE_BACKEND_UPI}/picVidGif/v1/auth`
+const AUTH_UPI = `${import.meta.env.VITE_BACKEND_URI}/picVidGif/v1/auth`
 
 
 export const loginApi = async ({ token }) => {
