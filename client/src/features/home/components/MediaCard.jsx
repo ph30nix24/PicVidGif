@@ -39,12 +39,12 @@ const gifAnimated = (item) =>
 
 /* ─── component ───────────────────────────────────────────── */
 const MediaCard = ({ item, type = 'images' }) => {
-  const cardRef    = useRef(null);
+  const cardRef = useRef(null);
   const overlayRef = useRef(null);
-  const playRef    = useRef(null);
+  const playRef = useRef(null);
   const actionsRef = useRef(null);
-  const videoRef   = useRef(null);
-  const imgRef     = useRef(null);
+  const videoRef = useRef(null);
+  const imgRef = useRef(null);
   const [liked, setLiked] = useState(false);
   const dispatch = useDispatch();
 
@@ -58,9 +58,11 @@ const MediaCard = ({ item, type = 'images' }) => {
       ? gifStill(item)
       : (item.urls?.regular || item.src);
 
-  const videoSrc    = isVideo ? pickVideoSrc(item.video_files) : null;
-  const gifAnimSrc  = isGif   ? gifAnimated(item)              : null;
-  const duration    = isVideo ? formatDuration(item.duration)  : null;
+  const videoSrc = isVideo ? pickVideoSrc(item.video_files) : null;
+  const gifAnimSrc = isGif ? gifAnimated(item) : null;
+  const duration = isVideo ? formatDuration(item.duration) : null;
+
+  const downloadUrl = isVideo ? videoSrc : isGif ? gifAnimSrc : item.urls?.full
 
   /* ── hover ── */
   const handleMouseEnter = useCallback(() => {
@@ -85,7 +87,7 @@ const MediaCard = ({ item, type = 'images' }) => {
     /* video: fade in native <video> and play */
     if (isVideo && videoRef.current && videoSrc) {
       videoRef.current.style.opacity = '1';
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play().catch(() => { });
     }
 
     /* gif: swap still → animated src */
@@ -134,6 +136,7 @@ const MediaCard = ({ item, type = 'images' }) => {
           sourceId: String(item.id),
           type: 'video',
           url: videoSrc,
+          downloadUrl: videoSrc,
           thumbnailUrl: item.image,
           description: item.user?.name ? `Video by ${item.user.name}` : '',
         };
@@ -142,6 +145,7 @@ const MediaCard = ({ item, type = 'images' }) => {
           sourceId: String(item.id),
           type: 'gif',
           url: gifAnimSrc,
+          downloadUrl: gifAnimSrc,
           thumbnailUrl: gifStill(item),
           description: item.title || '',
         };
@@ -150,6 +154,7 @@ const MediaCard = ({ item, type = 'images' }) => {
           sourceId: item.id,
           type: 'image',
           url: item.urls?.regular,
+          downloadUrl: item.links?.full,
           thumbnailUrl: item.urls?.thumb,
           description: item.alt_description || item.description || '',
         };
@@ -158,6 +163,54 @@ const MediaCard = ({ item, type = 'images' }) => {
       dispatch(addToast(`Successful ${result.message}`, 'success'));
     } catch (error) {
       dispatch(addToast(`Failed ${error.response?.data?.message}`, 'error'));
+    }
+  };
+
+  const handleDownload = async (url, filename) => {
+    try {
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      // Determine file extension from MIME type
+      const contentType = response.headers.get("Content-Type") || blob.type;
+      const extension = contentType.split("/")[1]?.split(";")[0] || "";
+
+      // Determine filename
+      let finalFilename = filename;
+
+      if (!finalFilename) {
+        // Try to get filename from URL
+        const urlName = decodeURIComponent(
+          url.split("/").pop()?.split("?")[0] || ""
+        );
+
+        if (urlName && urlName.includes(".")) {
+          finalFilename = urlName;
+        } else {
+          finalFilename = `download.${extension || "bin"}`;
+        }
+      }
+
+      const blobUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = finalFilename;
+      link.style.display = "none";
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download error:", error);
+      alert("Unable to download this file.");
     }
   };
 
@@ -260,21 +313,24 @@ const MediaCard = ({ item, type = 'images' }) => {
         <div ref={actionsRef} className="absolute bottom-3 left-3 flex items-center gap-2 opacity-0">
           <button
             onClick={handleLike}
-            className={`w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-200 ${
-              liked
-                ? 'bg-red-500/80 border-red-400/50 text-white'
-                : 'bg-black/50 border-white/20 text-white hover:bg-red-500/50'
-            }`}
+            className={`w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-200 cursor-pointer ${liked
+              ? 'bg-red-500/80 border-red-400/50 text-white'
+              : 'bg-black/50 border-white/20 text-white hover:bg-red-500/50'
+              }`}
             aria-label="Save to collection"
           >
             <Heart size={13} fill={liked ? 'white' : 'none'} />
           </button>
-          <button
-            className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-gray-600/60 hover:border-gray-400/50 transition-all duration-200"
-            aria-label="Download"
-          >
-            <Download size={13} />
-          </button>
+
+            <button
+              className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-gray-600/60 hover:border-gray-400/50 transition-all duration-200 cursor-pointer"
+              aria-label="Download"
+              onClick = {() => handleDownload(downloadUrl, `${type}-${item.id}`)}
+
+            >
+              <Download size={13} />
+            </button>
+
         </div>
 
         {/* ── Credit (videos & GIFs) ── */}

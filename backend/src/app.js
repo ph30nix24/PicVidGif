@@ -20,6 +20,9 @@ app.get('/', (req, res) => {
     res.status(200).json({ message: "Server is Up!"})
 })
 
+
+app.get('/picVidGif/v1/health', (req, res) => res.status(200).json({ status: 'ok' }));
+
 import authRouter from './routes/auth.routes.js';
 app.use('/picVidGif/v1/auth', authRouter)
 

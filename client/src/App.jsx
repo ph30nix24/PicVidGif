@@ -37,7 +37,9 @@ const App = () => {
 
   if (serverStatus === 'checking') {
     return (
-      <Loader />
+      <ThemeProvider>
+        <Loader />
+      </ThemeProvider>
     );
   }
 
